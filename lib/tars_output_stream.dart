@@ -1,13 +1,15 @@
 import 'dart:convert';
 import 'dart:typed_data';
-
+import 'dart:io';
 import 'package:dart_tars_protocol/tars_encode_exception.dart';
 import 'package:dart_tars_protocol/tars_struct.dart';
 
 class BinaryWriter {
   List<int> buffer;
   int position = 0;
+
   BinaryWriter(this.buffer);
+
   int get length => buffer.length;
 
   void writeBytes(Uint8List list) {
@@ -54,6 +56,7 @@ class BinaryWriter {
 
 class TarsOutputStream {
   late BinaryWriter bw;
+
   TarsOutputStream({Uint8List? ls}) {
     if (ls != null) {
       bw = BinaryWriter(ls);
@@ -154,10 +157,18 @@ class TarsOutputStream {
     }
     //int64
     //紧跟8个字节整型数据
-    if (n >= -9223372036854775808 && n <= 9223372036854775807) {
-      writeHead(TarsStructType.LONG.index, tag);
-      bw.writeInt(n, 8);
-      return;
+    if (Platform.isIOS || Platform.isIOS) {
+      if (n >= -9223372036854775808 && n <= 9223372036854775807) {
+        writeHead(TarsStructType.LONG.index, tag);
+        bw.writeInt(n, 8);
+        return;
+      }
+    } else {
+      if (n >= -0x1FFFFFFFFFFFFF && n <= 0x1FFFFFFFFFFFFF) {
+        writeHead(TarsStructType.LONG.index, tag);
+        bw.writeInt(n, 8);
+        return;
+      }
     }
   }
 
