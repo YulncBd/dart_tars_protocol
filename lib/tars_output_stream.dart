@@ -157,7 +157,7 @@ class TarsOutputStream {
     }
     //int64
     //紧跟8个字节整型数据
-    if (Platform.isIOS || Platform.isIOS) {
+    if (Platform.isIOS || Platform.isAndroid) {
       if (n >= -9223372036854775808 && n <= 9223372036854775807) {
         writeHead(TarsStructType.LONG.index, tag);
         bw.writeInt(n, 8);
