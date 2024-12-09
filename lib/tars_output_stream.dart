@@ -1,6 +1,5 @@
 import 'dart:convert';
 import 'dart:typed_data';
-import 'dart:io';
 import 'package:dart_tars_protocol/tars_encode_exception.dart';
 import 'package:dart_tars_protocol/tars_struct.dart';
 
@@ -157,18 +156,10 @@ class TarsOutputStream {
     }
     //int64
     //紧跟8个字节整型数据
-    if (Platform.isIOS || Platform.isAndroid) {
-      if (n >= -9223372036854775808 && n <= 9223372036854775807) {
-        writeHead(TarsStructType.LONG.index, tag);
-        bw.writeInt(n, 8);
-        return;
-      }
-    } else {
-      if (n >= -0x1FFFFFFFFFFFFF && n <= 0x1FFFFFFFFFFFFF) {
-        writeHead(TarsStructType.LONG.index, tag);
-        bw.writeInt(n, 8);
-        return;
-      }
+    if (n >= -0x1FFFFFFFFFFFFF && n <= 0x1FFFFFFFFFFFFF) {
+      writeHead(TarsStructType.LONG.index, tag);
+      bw.writeInt(n, 8);
+      return;
     }
   }
 
